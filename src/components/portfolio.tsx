@@ -518,10 +518,10 @@ export function PortfolioPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.5 }}
-            className="rounded-[2rem] border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 via-white/5 to-violet-400/10 p-8 shadow-[0_0_90px_rgba(34,211,238,0.12)] lg:p-12"
+            className="w-full min-w-0 rounded-[2rem] border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 via-white/5 to-violet-400/10 p-6 shadow-[0_0_90px_rgba(34,211,238,0.12)] sm:p-8 lg:p-12"
           >
-            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-              <div>
+            <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
+              <div className="min-w-0">
                 <p className="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">
                   Let&apos;s Work Together
                 </p>
@@ -535,10 +535,10 @@ export function PortfolioPage() {
                   how I can help.
                 </p>
               </div>
-              <div className="flex flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-[#060b1d] p-6">
+              <div className="flex min-w-0 flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-[#060b1d] p-4 sm:p-6">
                 <Link
                   href={`mailto:${socialLinks.email}`}
-                  className="text-lg font-medium text-white transition hover:text-cyan-300"
+                  className="min-w-0 break-all text-lg font-medium text-white transition hover:text-cyan-300"
                 >
                   {socialLinks.email}
                 </Link>
@@ -546,7 +546,7 @@ export function PortfolioPage() {
                   href={socialLinks.linkedin}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-lg font-medium text-white transition hover:text-cyan-300"
+                  className="min-w-0 break-words text-lg font-medium text-white transition hover:text-cyan-300"
                 >
                   LinkedIn
                 </Link>
@@ -554,7 +554,7 @@ export function PortfolioPage() {
                   href={socialLinks.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-lg font-medium text-white transition hover:text-cyan-300"
+                  className="min-w-0 break-words text-lg font-medium text-white transition hover:text-cyan-300"
                 >
                   GitHub
                 </Link>
@@ -563,14 +563,14 @@ export function PortfolioPage() {
                     href={socialLinks.medium}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-lg font-medium text-white transition hover:text-cyan-300"
+                    className="min-w-0 break-words text-lg font-medium text-white transition hover:text-cyan-300"
                   >
                     Medium
                   </Link>
                 ) : null}
                 <Link
                   href="#top"
-                  className="mt-4 rounded-full border border-white/10 px-5 py-3 text-center text-sm font-medium text-zinc-300 transition hover:border-cyan-300 hover:text-cyan-300"
+                  className="mt-4 w-fit rounded-full border border-white/10 px-5 py-3 text-center text-sm font-medium text-zinc-300 transition hover:border-cyan-300 hover:text-cyan-300"
                 >
                   Back to top
                 </Link>
