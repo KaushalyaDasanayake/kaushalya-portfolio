@@ -585,8 +585,6 @@ export function PortfolioPage() {
           © {new Date().getFullYear()} Kaushalya Rathnayake. All rights
           reserved.
         </p>
-
-        <p>Built with Next.js, TypeScript, and Tailwind CSS.</p>
       </footer>
     </div>
   );
