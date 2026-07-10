@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   description: siteMetadata.description,
   keywords: ["Kaushalya Rathnayake", "Full Stack Engineer", "AI", "NLP", "LLM"],
   authors: [{ name: siteMetadata.name }],
+  alternates: {
+    canonical: siteMetadata.url,
+  },
   openGraph: {
     title: siteMetadata.title,
     description: siteMetadata.description,

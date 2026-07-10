@@ -114,6 +114,8 @@ export function PortfolioPage() {
               alt="Kaushalya Rathnayake avatar"
               width={42}
               height={42}
+              priority
+              sizes="42px"
               className="rounded-full border border-white/10"
             />
             <span className="sr-only">Home</span>
@@ -311,6 +313,7 @@ export function PortfolioPage() {
                       src={project.image}
                       alt={`${project.title} preview`}
                       fill
+                      sizes="(min-width: 1024px) 50vw, 100vw"
                       className="object-cover transition duration-500 group-hover:scale-[1.03]"
                     />
                     {project.featured ? (
@@ -534,10 +537,10 @@ export function PortfolioPage() {
               </div>
               <div className="flex flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-[#060b1d] p-6">
                 <Link
-                  href={socialLinks.email}
+                  href={`mailto:${socialLinks.email}`}
                   className="text-lg font-medium text-white transition hover:text-cyan-300"
                 >
-                  {socialLinks.email.replace("mailto:", "")}
+                  {socialLinks.email}
                 </Link>
                 <Link
                   href={socialLinks.linkedin}
@@ -555,22 +558,16 @@ export function PortfolioPage() {
                 >
                   GitHub
                 </Link>
-                <Link
-                  href={socialLinks.medium}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-lg font-medium text-white transition hover:text-cyan-300"
-                >
-                  Medium
-                </Link>
-                {/* <Link
-                  href={socialLinks.upwork}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-lg font-medium text-white transition hover:text-cyan-300"
-                >
-                  Upwork
-                </Link> */}
+                {socialLinks.medium ? (
+                  <Link
+                    href={socialLinks.medium}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-lg font-medium text-white transition hover:text-cyan-300"
+                  >
+                    Medium
+                  </Link>
+                ) : null}
                 <Link
                   href="#top"
                   className="mt-4 rounded-full border border-white/10 px-5 py-3 text-center text-sm font-medium text-zinc-300 transition hover:border-cyan-300 hover:text-cyan-300"

@@ -309,8 +309,8 @@ export const socialLinks = {
   linkedin: "https://www.linkedin.com/in/kaushalya-rathnayake-d/",
   github: "https://github.com/KaushalyaDasanayake",
   email: "kaushalyadasanayake97@gmail.com",
-  upwork: "",
-  medium: "YOUR_MEDIUM_URL",
+  // TODO: Add your Medium profile URL when it is ready.
+  medium: "",
 };
 
 export const siteMetadata = {
