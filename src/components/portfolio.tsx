@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   articles,
   experience,
@@ -26,7 +26,7 @@ function SectionHeading({
 }) {
   return (
     <div className="max-w-2xl space-y-4">
-      <p className="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">
+      <p className="text-sm font-medium uppercase tracking-[0.35em] text-[color:var(--accent)]">
         {eyebrow}
       </p>
       <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
@@ -47,12 +47,12 @@ function Timeline({ items }: { items: typeof experience }) {
           key={`${item.company}-${item.role}-${item.period}`}
           className="relative"
         >
-          <span className="absolute -left-[1.9rem] top-2 h-3.5 w-3.5 rounded-full border border-cyan-400 bg-cyan-400/20" />
+          <span className="absolute -left-[1.9rem] top-2 h-3.5 w-3.5 rounded-full border border-[color:var(--accent)]/60 bg-[color:var(--accent)]/20" />
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_0_80px_rgba(52,211,153,0.08)] backdrop-blur">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-lg font-semibold text-white">{item.role}</p>
-                <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+                <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--accent)]">
                   {item.company}
                 </p>
               </div>
@@ -64,7 +64,7 @@ function Timeline({ items }: { items: typeof experience }) {
             <ul className="mt-4 space-y-2 text-sm text-zinc-300">
               {item.highlights.map((highlight) => (
                 <li key={highlight} className="flex gap-2">
-                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-300" />
+                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[color:var(--accent)]" />
                   <span>{highlight}</span>
                 </li>
               ))}
@@ -96,19 +96,46 @@ function Timeline({ items }: { items: typeof experience }) {
 
 export function PortfolioPage() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("top");
+
+  useEffect(() => {
+    const sections = navigation
+      .map((item) => document.getElementById(item.href.replace("#", "")))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visibleEntry) {
+          setActiveSection(visibleEntry.target.id);
+        }
+      },
+      { threshold: [0.2, 0.45, 0.7] }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#050816] text-zinc-100">
+    <div
+      className="min-h-screen bg-[#050816] text-zinc-100"
+      style={{ ["--accent" as string]: "#7ee7d6" }}
+    >
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus rounded-full bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus rounded-full bg-[color:var(--accent)] px-4 py-2 text-sm font-medium text-slate-950"
       >
         Skip to content
       </a>
 
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#050816]/80 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 sm:px-8 lg:px-12">
-          <Link href="#top" className="flex items-center gap-3">
+          <Link href="#top" className="flex items-center gap-3 transition-transform duration-300 hover:scale-105">
             <Image
               src="/images/avatar.png"
               alt="Kaushalya Rathnayake avatar"
@@ -122,15 +149,27 @@ export function PortfolioPage() {
           </Link>
 
           <div className="hidden items-center gap-6 md:flex">
-            {navigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-sm text-zinc-400 transition hover:text-white"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navigation.map((item) => {
+              const sectionId = item.href.replace("#", "");
+              const isActive = activeSection === sectionId;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`relative text-sm transition duration-300 ${
+                    isActive ? "text-white" : "text-zinc-400 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                  <span
+                    className={`absolute inset-x-0 -bottom-1 h-px rounded-full bg-[color:var(--accent)] transition-all duration-300 ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </div>
 
           <button
@@ -180,7 +219,7 @@ export function PortfolioPage() {
               transition={{ duration: 0.6 }}
               className="max-w-3xl"
             >
-              <p className="mb-6 text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">
+              <p className="mb-6 text-sm font-medium uppercase tracking-[0.35em] text-[color:var(--accent)]">
                 {personalInfo.heroLabel}
               </p>
               <h1 className="text-4xl font-semibold leading-[0.95] tracking-[-0.03em] text-white sm:text-5xl lg:text-7xl">
@@ -189,10 +228,14 @@ export function PortfolioPage() {
               <p className="mt-8 max-w-2xl text-lg leading-8 text-zinc-400 sm:text-xl">
                 {personalInfo.heroDescription}
               </p>
-              <div className="mt-10 flex flex-wrap gap-4">
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--accent)]/20 bg-[color:var(--accent)]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-[color:var(--accent)]">
+                <span className="h-2 w-2 rounded-full bg-[color:var(--accent)]" />
+                Available for freelance
+              </div>
+              <div className="mt-8 flex flex-wrap gap-4">
                 <Link
                   href="#projects"
-                  className="rounded-full bg-cyan-400 px-6 py-3 text-sm font-medium text-slate-950 transition hover:bg-cyan-300"
+                  className="rounded-full bg-[color:var(--accent)] px-6 py-3 text-sm font-medium text-slate-950 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#8feddb] active:translate-y-px"
                 >
                   View My Work
                 </Link>
@@ -200,7 +243,7 @@ export function PortfolioPage() {
                   href={socialLinks.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:border-cyan-300 hover:text-cyan-300"
+                  className="rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] active:translate-y-px"
                 >
                   GitHub
                 </Link>
@@ -213,7 +256,7 @@ export function PortfolioPage() {
               transition={{ delay: 0.15, duration: 0.6 }}
               className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-[0_0_120px_rgba(34,211,238,0.12)] backdrop-blur"
             >
-              <div className="rounded-[1.5rem] border border-white/10 bg-[#060b1d] p-6">
+              <div className="rounded-[1.5rem] border border-white/10 bg-[#060b1d] p-6 bg-[radial-gradient(circle_at_top_left,_rgba(126,231,214,0.12),_transparent_45%)]">
                 <p className="text-sm uppercase tracking-[0.3em] text-zinc-500">
                   What I Build
                 </p>
@@ -225,7 +268,7 @@ export function PortfolioPage() {
                     "Modern full-stack web applications with React and Next.js",
                   ].map((item) => (
                     <div key={item} className="flex items-start gap-3">
-                      <span className="mt-2 h-2.5 w-2.5 rounded-full bg-cyan-400" />
+                      <span className="mt-2 h-2.5 w-2.5 rounded-full bg-[color:var(--accent)]" />
                       <p className="text-sm leading-7 text-zinc-300">{item}</p>
                     </div>
                   ))}
@@ -248,13 +291,13 @@ export function PortfolioPage() {
           >
             <SectionHeading
               eyebrow="About"
-              title="From product engineering to intelligent systems"
-              description="The path from building robust full-stack products to engineering AI experiences has been a natural progression. I bring a strong product mindset to applied NLP work, with a focus on systems that are usable, measurable, and production-ready."
+              title="From building products to shaping intelligent systems"
+              description="My work has gradually shifted from shipping polished products to building AI systems that are practical, reliable, and useful in the real world. I enjoy the mix of product thinking, backend engineering, and applied NLP work."
             />
             <div className="space-y-6 text-base leading-8 text-zinc-400">
               <p>{personalInfo.about}</p>
               <p>{personalInfo.availability}</p>
-              <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-5 text-sm text-cyan-200">
+              <div className="rounded-2xl border border-[color:var(--accent)]/20 bg-[color:var(--accent)]/10 p-5 text-sm text-[color:var(--accent)]">
                 I am especially interested in designing reliable pipelines
                 around LLMs, embeddings, evaluation, and user-facing interfaces.
               </div>
@@ -276,7 +319,7 @@ export function PortfolioPage() {
             <SectionHeading
               eyebrow="Experience"
               title="Building reliable software across frontend, backend, and infrastructure"
-              description="Over 4 years of experience delivering scalable web applications, backend services, APIs, and production-ready software systems."
+              description="Over the last few years, I’ve built reliable products, shipped APIs, and gradually moved deeper into AI and NLP work with a focus on things that hold up in production."
             />
             <Timeline items={experience} />
           </motion.div>
@@ -296,7 +339,7 @@ export function PortfolioPage() {
             <SectionHeading
               eyebrow="Featured Projects"
               title="Selected work spanning applied NLP and AI product engineering"
-              description="Each project card is driven by editable content so the portfolio stays easy to update."
+              description="These projects reflect the way I like to build: strong engineering, clear product thinking, and practical AI applications."
             />
             <div className="grid gap-6 lg:grid-cols-2">
               {projects.map((project, index) => (
@@ -306,7 +349,7 @@ export function PortfolioPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ delay: index * 0.05, duration: 0.45 }}
-                  className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 shadow-[0_0_80px_rgba(255,255,255,0.03)] backdrop-blur"
+                  className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/5 shadow-[0_0_80px_rgba(255,255,255,0.03)] backdrop-blur transition-all duration-300 hover:-translate-y-1.5 hover:border-[color:var(--accent)]/35 hover:bg-white/[0.08] hover:shadow-[0_20px_60px_rgba(126,231,214,0.12)]"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10 bg-[#0a1024]">
                     <Image
@@ -317,7 +360,7 @@ export function PortfolioPage() {
                       className="object-cover transition duration-500 group-hover:scale-[1.03]"
                     />
                     {project.featured ? (
-                      <span className="absolute left-4 top-4 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] text-cyan-200">
+                      <span className="absolute left-4 top-4 rounded-full border border-[color:var(--accent)]/30 bg-[color:var(--accent)]/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.25em] text-[color:var(--accent)]">
                         Featured
                       </span>
                     ) : null}
@@ -345,7 +388,7 @@ export function PortfolioPage() {
                           href={project.githubUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-sm font-medium text-cyan-300 transition hover:text-cyan-200"
+                          className="text-sm font-medium text-[color:var(--accent)] transition hover:text-[#8feddb]"
                         >
                           GitHub ↗
                         </Link>
@@ -355,7 +398,7 @@ export function PortfolioPage() {
                           href={project.liveUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-sm font-medium text-white transition hover:text-cyan-200"
+                          className="text-sm font-medium text-white transition hover:text-[#8feddb]"
                         >
                           Live Preview ↗
                         </Link>
@@ -391,8 +434,8 @@ export function PortfolioPage() {
           >
             <SectionHeading
               eyebrow="Technical Skills"
-              title="A blend of product engineering depth and AI-native execution"
-              description="The stack below reflects the systems I build and the spaces I actively explore."
+              title="What I work with day to day"
+              description="A mix of product engineering, backend systems, and AI tools that I use to ship work that is both reliable and practical."
             />
             <div className="mt-10 grid gap-6 md:grid-cols-2">
               {skillGroups.map((group) => (
@@ -429,8 +472,8 @@ export function PortfolioPage() {
           >
             <SectionHeading
               eyebrow="Services"
-              title="How I can help bring your ideas to life"
-              description="From modern web applications to backend APIs and AI-powered tools, I build reliable solutions tailored to your project needs."
+              title="How I can help"
+              description="From polished web products to backend systems and AI-powered features, I build solutions that feel considered and dependable."
             />
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -439,7 +482,7 @@ export function PortfolioPage() {
                   key={service.title}
                   className="rounded-[1.5rem] border border-white/10 bg-white/5 p-6"
                 >
-                  <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+<p className="text-sm uppercase tracking-[0.3em] text-[color:var(--accent)]">
                     {service.number}
                   </p>
 
@@ -469,8 +512,8 @@ export function PortfolioPage() {
           >
             <SectionHeading
               eyebrow="Technical Writing"
-              title="Lessons from building software and AI systems"
-              description="Practical insights, implementation challenges, and lessons from my hands-on work in full-stack development, machine learning, NLP, and LLM applications."
+              title="Notes from building software and AI systems"
+              description="A few reflections from my hands-on work in full-stack development, machine learning, NLP, and LLM applications."
             />
             <div className="grid gap-6 lg:grid-cols-3">
               {articles.map((article) => (
@@ -479,9 +522,9 @@ export function PortfolioPage() {
                   href={article.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="group rounded-[1.5rem] border border-white/10 bg-white/5 p-6 transition hover:-translate-y-1 hover:border-cyan-400/30"
+                  className="group rounded-[1.5rem] border border-white/10 bg-white/5 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[color:var(--accent)]/30"
                 >
-                  <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
+                  <p className="text-sm uppercase tracking-[0.3em] text-[color:var(--accent)]">
                     {article.readTime}
                   </p>
                   <h3 className="mt-4 text-xl font-semibold text-white">
@@ -490,7 +533,7 @@ export function PortfolioPage() {
                   <p className="mt-3 text-sm leading-7 text-zinc-400">
                     {article.description}
                   </p>
-                  <span className="mt-5 inline-flex text-sm font-medium text-cyan-300 transition group-hover:text-cyan-200">
+                  <span className="mt-5 inline-flex text-sm font-medium text-[color:var(--accent)] transition group-hover:text-[#8feddb]">
                     Read article ↗
                   </span>
                 </Link>
@@ -501,7 +544,7 @@ export function PortfolioPage() {
                 href="https://kaushalyadasanayake.medium.com/"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-white transition hover:border-cyan-400/40 hover:text-cyan-300"
+                className="inline-flex items-center rounded-full border border-white/10 px-6 py-3 text-sm font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-[color:var(--accent)]/40 hover:text-[color:var(--accent)]"
               >
                 View all articles on Medium ↗
               </Link>
@@ -522,23 +565,23 @@ export function PortfolioPage() {
           >
             <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10">
               <div className="min-w-0">
-                <p className="text-sm font-medium uppercase tracking-[0.35em] text-cyan-300">
-                  Let&apos;s Work Together
+                <p className="text-sm font-medium uppercase tracking-[0.35em] text-[color:var(--accent)]">
+                  Let&apos;s build something useful
                 </p>
                 <h2 className="mt-4 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  Have a project in mind? Let&apos;s build it.
+                  Have a project in mind? Let&apos;s talk.
                 </h2>
                 <p className="mt-5 max-w-xl text-base leading-8 text-zinc-400">
                   I&apos;m available for freelance projects involving full-stack
                   development, backend APIs, Python, and AI-powered
-                  applications. Tell me about your idea, and let&apos;s discuss
-                  how I can help.
+                  applications. If you have an idea you want to shape into
+                  something real, I’d love to hear about it.
                 </p>
               </div>
               <div className="flex min-w-0 flex-col gap-4 rounded-[1.5rem] border border-white/10 bg-[#060b1d] p-4 sm:p-6">
                 <Link
                   href={`mailto:${socialLinks.email}`}
-                  className="min-w-0 break-all text-lg font-medium text-white transition hover:text-cyan-300"
+                  className="min-w-0 break-all text-lg font-medium text-white transition hover:text-[color:var(--accent)]"
                 >
                   {socialLinks.email}
                 </Link>
@@ -546,7 +589,7 @@ export function PortfolioPage() {
                   href={socialLinks.linkedin}
                   target="_blank"
                   rel="noreferrer"
-                  className="min-w-0 break-words text-lg font-medium text-white transition hover:text-cyan-300"
+                  className="min-w-0 break-words text-lg font-medium text-white transition hover:text-[color:var(--accent)]"
                 >
                   LinkedIn
                 </Link>
@@ -554,7 +597,7 @@ export function PortfolioPage() {
                   href={socialLinks.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="min-w-0 break-words text-lg font-medium text-white transition hover:text-cyan-300"
+                  className="min-w-0 break-words text-lg font-medium text-white transition hover:text-[color:var(--accent)]"
                 >
                   GitHub
                 </Link>
@@ -563,14 +606,14 @@ export function PortfolioPage() {
                     href={socialLinks.medium}
                     target="_blank"
                     rel="noreferrer"
-                    className="min-w-0 break-words text-lg font-medium text-white transition hover:text-cyan-300"
+                    className="min-w-0 break-words text-lg font-medium text-white transition hover:text-[color:var(--accent)]"
                   >
                     Medium
                   </Link>
                 ) : null}
                 <Link
                   href="#top"
-                  className="mt-4 w-fit rounded-full border border-white/10 px-5 py-3 text-center text-sm font-medium text-zinc-300 transition hover:border-cyan-300 hover:text-cyan-300"
+                  className="mt-4 w-fit rounded-full border border-white/10 px-5 py-3 text-center text-sm font-medium text-zinc-300 transition-all duration-300 hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
                 >
                   Back to top
                 </Link>

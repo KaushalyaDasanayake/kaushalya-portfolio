@@ -34,10 +34,10 @@ export interface Article {
 export const personalInfo = {
   name: "Kaushalya Rathnayake",
   role: "Full Stack Software Engineer",
-  heroLabel: "FULL STACK · BACKEND · AI SOLUTIONS",
-  heroHeading: "I build scalable software\nand intelligent systems.",
+  heroLabel: "FULL STACK SOFTWARE ENGINEER · AI & NLP",
+  heroHeading: "I build software that feels useful\nand genuinely thoughtful.",
   heroDescription:
-    "Full Stack Software Engineer with 4+ years of experience building scalable web applications, backend services, APIs, and practical AI-powered solutions using modern web, Python, and NLP technologies.",
+    "I design and build full-stack products with a strong focus on reliable systems, clear interfaces, and practical AI applications that solve real problems.",
 
   about:
     "I build reliable, user-focused software across the full stack from polished web applications and scalable backend systems to AI-powered tools. My work combines React, Next.js, Node.js, Python, FastAPI, NLP, and LLM technologies to turn ideas into practical, maintainable products that solve real business problems.",
